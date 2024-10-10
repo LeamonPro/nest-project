@@ -10,9 +10,11 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { User } from './user.interface';
 import { UserResponse } from './dto/user-response.dto';
+import { access } from 'fs';
+import { LoginDto } from './dto/login-dto.dto';
 
 @Controller('users')
 export class UsersController {
@@ -41,5 +43,14 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(Number(id));
+  }
+
+  @Post('login')
+  login(@Body() loginCred:LoginDto):Observable<Object>{
+    return this.usersService.login(loginCred).pipe(
+      map((jwt:string)=>{
+        return {access_token :jwt};
+      })
+    )
   }
 }
